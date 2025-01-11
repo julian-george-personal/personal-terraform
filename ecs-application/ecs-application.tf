@@ -34,6 +34,7 @@ resource "aws_vpc" "ecs-vpc" {
 }
 
 resource "aws_subnet" "ecs-subnet" {
+  cidr_block = "10.0.0.0/16"
   vpc_id     = aws_vpc.ecs-vpc.id
 }
 
