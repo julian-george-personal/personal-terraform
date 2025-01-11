@@ -4,10 +4,48 @@ resource "aws_ecr_repository" "apprunner-repository" {
   image_tag_mutability = "IMMUTABLE"
 }
 
-resource "aws_apprunner_service" "example" {
+data "aws_iam_policy_document" "apprunner-assumerole-policy" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["build.apprunner.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "apprunner-role" {
+  assume_role_policy = data.aws_iam_policy_document.apprunner-assumerole-policy.json
+}
+
+data "aws_iam_policy_document" "apprunner-ecr-policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:DescribeImages",
+      "ecr:GetAuthorizationToken"
+    ]
+    resources = [aws_ecr_repository.apprunner-repository.arn]
+  }
+
+}
+
+resource "aws_iam_role_policy" "name" {
+  role   = aws_iam_role.apprunner-role.name
+  policy = data.aws_iam_policy_document.apprunner-ecr-policy.json
+}
+
+resource "aws_apprunner_service" "apprunner" {
   service_name = var.app_name
 
   source_configuration {
+    authentication_configuration {
+      access_role_arn = aws_iam_role.apprunner-role.arn
+    }
     image_repository {
       image_identifier      = "${aws_ecr_repository.apprunner-repository.repository_url}:latest"
       image_repository_type = "ECR"
@@ -16,7 +54,7 @@ resource "aws_apprunner_service" "example" {
   }
 
   instance_configuration {
-    cpu = 256
+    cpu    = 256
     memory = 512
   }
 
