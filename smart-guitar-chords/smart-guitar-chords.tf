@@ -12,6 +12,10 @@ resource "aws_ecs_cluster" "chords-cluster" {
 resource "aws_ecs_task_definition" "chords-task" {
   count = var.is_enabled ? 1 : 0
   family = local.app_name
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu = 256
+  memory = 512
   container_definitions = jsonencode([
     {
       name      = local.app_name
