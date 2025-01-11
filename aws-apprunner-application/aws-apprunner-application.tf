@@ -10,7 +10,7 @@ resource "aws_apprunner_service" "example" {
   source_configuration {
     image_repository {
       image_identifier      = "${aws_ecr_repository.apprunner-repository.repository_url}:latest"
-      image_repository_type = "ECR_PUBLIC"
+      image_repository_type = "ECR"
     }
     auto_deployments_enabled = true
   }
