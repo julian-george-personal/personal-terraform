@@ -30,12 +30,13 @@ data "aws_iam_policy_document" "apprunner-ecr-policy" {
       "ecr:DescribeImages",
       "ecr:GetAuthorizationToken"
     ]
-    resources = [aws_ecr_repository.apprunner-repository.arn]
+    resources = ["*"]
   }
 
 }
 
-resource "aws_iam_role_policy" "name" {
+resource "aws_iam_role_policy" "apprunner-ecr-policy" {
+    name = "${var.app_name}-ecr-access"
   role   = aws_iam_role.apprunner-role.name
   policy = data.aws_iam_policy_document.apprunner-ecr-policy.json
 }
