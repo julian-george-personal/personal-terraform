@@ -16,6 +16,7 @@ data "aws_iam_policy_document" "apprunner-assumerole-policy" {
 }
 
 resource "aws_iam_role" "apprunner-role" {
+  name               = "${var.app_name}-apprunner-role"
   assume_role_policy = data.aws_iam_policy_document.apprunner-assumerole-policy.json
 }
 
