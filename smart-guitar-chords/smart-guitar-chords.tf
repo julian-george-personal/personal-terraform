@@ -13,7 +13,19 @@ resource "aws_ecs_task_definition" "chords-task" {
   count = var.is_enabled ? 1 : 0
   family = local.app_name
   container_definitions = jsonencode([
-
+    {
+      name      = local.app_name
+      image     = aws_ecr_repository.chord-repository[0].repository_url+":latest"
+      cpu       = 0.5
+      memory    = 1
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+        }
+      ]
+    },
   ])
 }
 
