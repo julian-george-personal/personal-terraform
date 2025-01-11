@@ -1,18 +1,27 @@
 resource "aws_ecr_repository" "chords-repository" {
-    count = var.is_enabled ? 1 : 0
+  count = var.is_enabled ? 1 : 0
   name                 = local.app_name
   image_tag_mutability = "IMMUTABLE"
 }
 
 resource "aws_ecs_cluster" "chords-cluster" {
-    count = var.is_enabled ? 1 : 0
+  count = var.is_enabled ? 1 : 0
   name = local.app_name
 }
 
+resource "aws_ecs_task_definition" "chords-task" {
+  count = var.is_enabled ? 1 : 0
+  family = local.app_name
+  container_definitions = jsonencode([
+
+  ])
+}
+
 resource "aws_ecs_service" "chords-service" {
-    count = var.is_enabled ? 1 : 0
+  count = var.is_enabled ? 1 : 0
   name          = local.app_name
   cluster       = aws_ecs_cluster.chords-cluster[0].id
+  task_definition = aws_ecs_task_definition.chords-task[0].arn
   desired_count = 1
   launch_type   = "FARGATE"
 }
