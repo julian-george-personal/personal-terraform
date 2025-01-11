@@ -25,7 +25,7 @@ resource "aws_iam_role" "chords-ecs-role" {
 }
 
 resource "aws_iam_role_policy_attachment" "chords-ecs-perms" {
-  role = aws_iam_role.chords-ecs-role.arn
+  role = aws_iam_role.chords-ecs-role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
