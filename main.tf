@@ -8,5 +8,5 @@ resource "aws_route53_zone" "primary" {
 
 module "smart-guitar-chords" {
   source = "./smart-guitar-chords"
-  is_enabled = true
+  count = 1
 }
