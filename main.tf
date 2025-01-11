@@ -7,6 +7,7 @@ resource "aws_route53_zone" "primary" {
 }
 
 module "smart-guitar-chords" {
-  source = "./smart-guitar-chords"
+  source = "./ecs-application"
+  app_name="smart-guitar-chords"
   count = 1
 }
