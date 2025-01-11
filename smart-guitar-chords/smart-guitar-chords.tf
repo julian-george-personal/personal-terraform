@@ -16,15 +16,9 @@ resource "aws_ecs_task_definition" "chords-task" {
     {
       name      = local.app_name
       image     = "${aws_ecr_repository.chords-repository[0].repository_url}:latest"
-      cpu       = 0.5
-      memory    = 1
+      cpu       = 256
+      memory    = 512
       essential = true
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
     },
   ])
 }
