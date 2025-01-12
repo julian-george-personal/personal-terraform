@@ -39,5 +39,5 @@ resource "aws_route53_record" "smart-guitar-chords" {
   name = "guitarchords"
   type = "CNAME"
   ttl = 7200
-  records = module.aws-apprunner-application.cname_records[0]
+  records = [module.aws-apprunner-application.cname_records[0]]
 }
