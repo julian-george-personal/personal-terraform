@@ -10,7 +10,7 @@ resource "aws_route53_zone" "primary" {
   name = local.root_domain
 }
 
-resource "aws_route53_record" "example" {
+resource "aws_route53_record" "primary-name" {
   allow_overwrite = true
   name            = local.root_domain
   ttl             = 172800
@@ -20,7 +20,7 @@ resource "aws_route53_record" "example" {
   records = aws_route53_zone.primary.name_servers
 }
 
-resource "aws_route53_record" "mail-record" {
+resource "aws_route53_record" "primary-mail" {
   zone_id = aws_route53_zone.primary.zone_id
   name = local.root_domain
   type = "MX"
