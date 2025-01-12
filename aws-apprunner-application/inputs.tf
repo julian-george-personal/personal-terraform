@@ -3,5 +3,5 @@ variable "app_name" {
 }
 
 variable "domain_name" {
-  type=string
+  type = string
 }

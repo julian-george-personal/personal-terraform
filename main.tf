@@ -22,22 +22,22 @@ resource "aws_route53_record" "primary-name" {
 
 resource "aws_route53_record" "primary-mail" {
   zone_id = aws_route53_zone.primary.zone_id
-  name = local.root_domain
-  type = "MX"
-  ttl = 172800
-  records = ["1 aspmx.l.google.com", "5 alt1.aspmx.l.google.com","5 alt2.aspmx.l.google.com", "10 alt3.aspmx.l.google.com", "10 alt4.aspmx.l.google.com"]
+  name    = local.root_domain
+  type    = "MX"
+  ttl     = 172800
+  records = ["1 aspmx.l.google.com", "5 alt1.aspmx.l.google.com", "5 alt2.aspmx.l.google.com", "10 alt3.aspmx.l.google.com", "10 alt4.aspmx.l.google.com"]
 }
 
 module "aws-apprunner-application" {
-  source   = "./aws-apprunner-application"
-  app_name = "smart-guitar-chords"
+  source      = "./aws-apprunner-application"
+  app_name    = "smart-guitar-chords"
   domain_name = "guitarchords.${local.root_domain}"
 }
 
 resource "aws_route53_record" "smart-guitar-chords" {
   zone_id = aws_route53_zone.primary.zone_id
-  name = "guitarchords"
-  type = "CNAME"
-  ttl = 7200
-  records = [module.aws-apprunner-application.cname_records[0]]
+  name    = "guitarchords"
+  type    = "CNAME"
+  ttl     = 7200
+  records = [module.aws-apprunner-application.dns_target]
 }

@@ -1,6 +1,6 @@
 # TODO make this private
 resource "aws_ecr_repository" "apprunner-repository" {
-  name                 = "${var.app_name}"
+  name                 = var.app_name
   image_tag_mutability = "MUTABLE"
 }
 
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "apprunner-ecr-policy" {
 }
 
 resource "aws_iam_role_policy" "apprunner-ecr-policy" {
-    name = "${var.app_name}-ecr-access"
+  name   = "${var.app_name}-ecr-access"
   role   = aws_iam_role.apprunner-role.name
   policy = data.aws_iam_policy_document.apprunner-ecr-policy.json
 }
