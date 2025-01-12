@@ -25,7 +25,7 @@ resource "aws_route53_record" "primary-mail" {
   name = local.root_domain
   type = "MX"
   ttl = 172800
-  records = ["aspmx.l.google.com", "alt1.aspmx.l.google.com","alt2.aspmx.l.google.com", "alt3.aspmx.l.google.com", "alt4.aspmx.l.google.com"]
+  records = ["1 aspmx.l.google.com", "5 alt1.aspmx.l.google.com","5 alt2.aspmx.l.google.com", "10 alt3.aspmx.l.google.com", "10 alt4.aspmx.l.google.com"]
 }
 
 module "aws-apprunner-application" {
@@ -39,5 +39,5 @@ resource "aws_route53_record" "smart-guitar-chords" {
   name = "guitarchords"
   type = "CNAME"
   ttl = 7200
-  records = module.aws-apprunner-application.cname_records
+  records = module.aws-apprunner-application.cname_records[0]
 }
