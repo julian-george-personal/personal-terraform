@@ -24,6 +24,7 @@ resource "aws_route53_record" "primary-mail" {
   zone_id = aws_route53_zone.primary.zone_id
   name = local.root_domain
   type = "MX"
+  ttl = 172800
   records = ["aspmx.l.google.com", "alt1.aspmx.l.google.com","alt2.aspmx.l.google.com", "alt3.aspmx.l.google.com", "alt4.aspmx.l.google.com"]
 }
 
@@ -37,5 +38,6 @@ resource "aws_route53_record" "smart-guitar-chords" {
   zone_id = aws_route53_zone.primary.zone_id
   name = "guitarchords"
   type = "CNAME"
+  ttl = 7200
   records = module.aws-apprunner-application.cname_records
 }
