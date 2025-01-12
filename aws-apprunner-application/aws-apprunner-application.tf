@@ -1,6 +1,6 @@
 # TODO make this private
 resource "aws_ecr_repository" "apprunner-repository" {
-  name                 = "${var.app_name}-repository"
+  name                 = "${var.app_name}"
   image_tag_mutability = "IMMUTABLE"
 }
 
