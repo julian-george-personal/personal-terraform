@@ -69,3 +69,8 @@ resource "aws_apprunner_service" "apprunner" {
     }
   }
 }
+
+resource "aws_apprunner_custom_domain_association" "apprunner-domain-name" {
+  domain_name = var.domain_name
+  service_arn = aws_apprunner_service.apprunner.arn
+}

@@ -1,12 +1,41 @@
+locals {
+  root_domain = "juliangeorge.net"
+}
+
 provider "aws" {
   region = "us-east-1"
 }
 
 resource "aws_route53_zone" "primary" {
-  name = "juliangeorge.net"
+  name = local.root_domain
+}
+
+resource "aws_route53_record" "example" {
+  allow_overwrite = true
+  name            = local.root_domain
+  ttl             = 172800
+  type            = "NS"
+  zone_id         = aws_route53_zone.primary.zone_id
+
+  records = aws_route53_zone.primary.name_servers
+}
+
+resource "aws_route53_record" "mail-record" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name = local.root_domain
+  type = "MX"
+  records = ["aspmx.l.google.com", "alt1.aspmx.l.google.com","alt2.aspmx.l.google.com", "alt3.aspmx.l.google.com", "alt4.aspmx.l.google.com"]
 }
 
 module "aws-apprunner-application" {
   source   = "./aws-apprunner-application"
   app_name = "smart-guitar-chords"
+  domain_name = "guitarchords.${local.root_domain}"
+}
+
+resource "aws_route53_record" "smart-guitar-chords" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name = "guitarchords"
+  type = "CNAME"
+  records = module.aws-apprunner-application.cname_records
 }
