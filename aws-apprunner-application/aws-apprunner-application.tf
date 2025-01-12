@@ -1,7 +1,7 @@
 # TODO make this private
 resource "aws_ecr_repository" "apprunner-repository" {
   name                 = "${var.app_name}"
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = "MUTABLE"
 }
 
 data "aws_iam_policy_document" "apprunner-assumerole-policy" {
