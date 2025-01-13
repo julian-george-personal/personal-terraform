@@ -69,8 +69,17 @@ resource "aws_apprunner_service" "apprunner" {
     }
   }
 }
-
 resource "aws_apprunner_custom_domain_association" "apprunner-domain-name" {
+  count = var.is_dns_enabled ? 1 : 0
   domain_name = var.domain_name
   service_arn = aws_apprunner_service.apprunner.arn
+}
+
+resource "aws_route53_record" "apprunner-cname-record" {
+  count = var.is_dns_enabled ? 1 : 0
+  zone_id = var.hosted_zone_id
+  name    = var.domain_name
+  type    = "CNAME"
+  ttl     = 7200
+  records = [aws_apprunner_custom_domain_association.apprunner-domain-name[0].dns_target]
 }
