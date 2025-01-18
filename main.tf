@@ -31,7 +31,7 @@ resource "aws_route53_record" "primary-mail" {
 module "aws-apprunner-application" {
   source         = "./aws-apprunner-application"
   app_name       = "smart-guitar-chords"
-  is_dns_enabled = false
+  is_dns_enabled = true
   domain_name    = "guitarchords.${local.root_domain}"
   hosted_zone_id = aws_route53_zone.primary.zone_id
 }
