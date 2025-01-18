@@ -3,15 +3,15 @@ variable "app_name" {
 }
 
 variable "is_dns_enabled" {
-    default = false
+  default = false
 }
 
 variable "hosted_zone_id" {
-    default = null
-    type = string
+  default = null
+  type    = string
 }
 
 variable "domain_name" {
-    default = null
-  type = string
+  default = null
+  type    = string
 }

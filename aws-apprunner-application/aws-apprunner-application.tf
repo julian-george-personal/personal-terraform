@@ -70,16 +70,22 @@ resource "aws_apprunner_service" "apprunner" {
   }
 }
 resource "aws_apprunner_custom_domain_association" "apprunner-domain-name" {
-  count = var.is_dns_enabled ? 1 : 0
+  count       = var.is_dns_enabled ? 1 : 0
   domain_name = var.domain_name
   service_arn = aws_apprunner_service.apprunner.arn
 }
 
-resource "aws_route53_record" "apprunner-cname-record" {
-  count = var.is_dns_enabled ? 1 : 0
+data "aws_apprunner_hosted_zone_id" "apprunner-hosted-zone-id" {}
+
+resource "aws_route53_record" "apprunner-alias-record" {
+  count   = var.is_dns_enabled ? 1 : 0
   zone_id = var.hosted_zone_id
   name    = var.domain_name
-  type    = "CNAME"
-  ttl     = 7200
-  records = [aws_apprunner_custom_domain_association.apprunner-domain-name[0].dns_target]
+  type    = "A"
+
+  alias {
+    name                   = aws_apprunner_custom_domain_association.apprunner-domain-name[0].dns_target
+    zone_id                = data.aws_apprunner_hosted_zone_id.apprunner-hosted-zone-id.id
+    evaluate_target_health = true
+  }
 }
