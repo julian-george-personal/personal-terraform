@@ -89,3 +89,12 @@ resource "aws_route53_record" "apprunner-alias-record" {
     evaluate_target_health = true
   }
 }
+resource "aws_route53_record" "apprunner-cname-record" {
+  for_each = {
+    for idx in range(var.is_dns_enabled ? 3 : 0) : idx => tolist(aws_apprunner_custom_domain_association.apprunner-domain-name[0].certificate_validation_records)[idx]
+  }
+  zone_id = var.hosted_zone_id
+  name    = each.value.name
+  records = [each.value.value]
+  type    = "CNAME"
+}
