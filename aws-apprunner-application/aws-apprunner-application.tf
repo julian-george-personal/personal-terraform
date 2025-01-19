@@ -95,6 +95,7 @@ resource "aws_route53_record" "apprunner-cname-record" {
   }
   zone_id = var.hosted_zone_id
   name    = each.value.name
+  ttl     = 10800
   records = [each.value.value]
   type    = "CNAME"
 }
