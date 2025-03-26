@@ -50,6 +50,7 @@ module "aws-apprunner-application" {
 
 module "smartguitarchords-dns-primary" {
   source = "./aws-apprunner-dns"
+  depends_on = [ module.aws-apprunner-application ]
   hosted_zone_id=aws_route53_zone.primary.zone_id
   domain_name = "guitarchords.${local.root_domain}"
   apprunner_arn = module.aws-apprunner-application.arn
@@ -57,6 +58,7 @@ module "smartguitarchords-dns-primary" {
 
 module "smartguitarchords-dns-smartguitarchords" {
   source = "./aws-apprunner-dns"
+  depends_on = [ module.aws-apprunner-application ]
   hosted_zone_id=aws_route53_zone.smartguitarchords.zone_id
   domain_name = local.smartguitarchords_domain
   apprunner_arn = module.aws-apprunner-application.arn
