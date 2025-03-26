@@ -9,6 +9,6 @@ variable "domain_name" {
 }
 
 variable "apprunner_arn" {
-    default = null
-    type = string
+  default = null
+  type    = string
 }
