@@ -35,7 +35,7 @@ resource "aws_route53_zone" "smartguitarchords" {
 
 resource "aws_route53_record" "smartguitarchords-name" {
   allow_overwrite = true
-  name            = local.root_domain
+  name            = local.smartguitarchords_domain
   ttl             = 172800
   type            = "NS"
   zone_id         = aws_route53_zone.smartguitarchords.zone_id
