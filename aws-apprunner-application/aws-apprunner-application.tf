@@ -7,7 +7,7 @@ resource "aws_ecr_repository" "apprunner-repository" {
   force_delete = true
 }
 
-data "aws_iam_policy_document" "apprunner-assumerole-policy" {
+data "aws_iam_policy_document" "apprunner-builder-assumerole-policy" {
   statement {
     effect = "Allow"
     principals {
@@ -18,9 +18,9 @@ data "aws_iam_policy_document" "apprunner-assumerole-policy" {
   }
 }
 
-resource "aws_iam_role" "apprunner-role" {
-  name               = "${var.app_name}-apprunner-role"
-  assume_role_policy = data.aws_iam_policy_document.apprunner-assumerole-policy.json
+resource "aws_iam_role" "apprunner-builder-role" {
+  name               = "${var.app_name}-apprunner-builder-role"
+  assume_role_policy = data.aws_iam_policy_document.apprunner-builder-assumerole-policy.json
 }
 
 data "aws_iam_policy_document" "apprunner-ecr-policy" {
@@ -33,15 +33,30 @@ data "aws_iam_policy_document" "apprunner-ecr-policy" {
       "ecr:DescribeImages",
       "ecr:GetAuthorizationToken"
     ]
-    resources = ["*"]
+    resources = [aws_ecr_repository.apprunner-repository.arn]
   }
-
 }
 
 resource "aws_iam_role_policy" "apprunner-ecr-policy" {
   name   = "${var.app_name}-ecr-access"
-  role   = aws_iam_role.apprunner-role.name
+  role   = aws_iam_role.apprunner-builder-role.name
   policy = data.aws_iam_policy_document.apprunner-ecr-policy.json
+}
+
+data "aws_iam_policy_document" "apprunner-instance-assumerole-policy" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["tasks.apprunner.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "apprunner-instance-role" {
+  name               = "${var.app_name}-apprunner-instance-role"
+  assume_role_policy = data.aws_iam_policy_document.apprunner-instance-assumerole-policy.json
 }
 
 resource "aws_apprunner_service" "apprunner" {
@@ -49,7 +64,7 @@ resource "aws_apprunner_service" "apprunner" {
 
   source_configuration {
     authentication_configuration {
-      access_role_arn = aws_iam_role.apprunner-role.arn
+      access_role_arn = aws_iam_role.apprunner-builder-role.arn
     }
     image_repository {
       image_identifier      = "${aws_ecr_repository.apprunner-repository.repository_url}:latest"
@@ -64,9 +79,9 @@ resource "aws_apprunner_service" "apprunner" {
   }
 
   instance_configuration {
-    cpu    = 256
-    memory = 512
-    instance_role_arn = aws_iam_role.apprunner-role.arn
+    cpu               = 256
+    memory            = 512
+    instance_role_arn = aws_iam_role.apprunner-instance-role.arn
   }
 
   network_configuration {
