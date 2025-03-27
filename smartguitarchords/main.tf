@@ -99,22 +99,20 @@ module "email" {
   hosted_zone_id = module.domain.hosted_zone_id
 }
 
+data "aws_iam_policy_document" "secrets_policy" {
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+    resources = [
+      aws_secretsmanager_secret.jwt_secret.arn
+    ]
+    effect = "Allow"
+  }
+}
 
-
-# data "aws_iam_policy_document" "secrets_policy" {
-#   statement {
-#     actions = [
-#       "secretsmanager:GetSecretValue"
-#     ]
-#     resources = [
-#       aws_secretsmanager_secret.jwt_secret.arn
-#     ]
-#     effect = "Allow"
-#   }
-# }
-
-# resource "aws_iam_role_policy" "secrets_policy_attachment" {
-#   name   = "${local.app_name}-secrets-access"
-#   role   = module.application.iam_role_name
-#   policy = data.aws_iam_policy_document.secrets_policy.json
-# }
+resource "aws_iam_role_policy" "secrets_policy_attachment" {
+  name   = "${local.app_name}-secrets-access"
+  role   = module.application.iam_role_name
+  policy = data.aws_iam_policy_document.secrets_policy.json
+}
