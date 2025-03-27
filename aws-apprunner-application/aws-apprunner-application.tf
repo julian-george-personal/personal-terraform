@@ -53,6 +53,8 @@ resource "aws_apprunner_service" "apprunner" {
       image_repository_type = "ECR"
       image_configuration {
         port = 80
+        runtime_environment_secrets = var.env_secrets
+        runtime_environment_variables = var.env_vars
       }
     }
     auto_deployments_enabled = true
