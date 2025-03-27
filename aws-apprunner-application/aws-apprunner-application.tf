@@ -1,4 +1,3 @@
-# TODO make this private
 resource "aws_ecr_repository" "apprunner-repository" {
   name                 = var.app_name
   image_tag_mutability = "MUTABLE"
@@ -67,6 +66,7 @@ resource "aws_apprunner_service" "apprunner" {
   instance_configuration {
     cpu    = 256
     memory = 512
+    instance_role_arn = aws_iam_role.apprunner-role.arn
   }
 
   network_configuration {
