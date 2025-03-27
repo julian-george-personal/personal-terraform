@@ -2,6 +2,10 @@
 resource "aws_ecr_repository" "apprunner-repository" {
   name                 = var.app_name
   image_tag_mutability = "MUTABLE"
+  lifecycle {
+    prevent_destroy = false
+  }
+  force_delete = true
 }
 
 data "aws_iam_policy_document" "apprunner-assumerole-policy" {
@@ -52,8 +56,8 @@ resource "aws_apprunner_service" "apprunner" {
       image_identifier      = "${aws_ecr_repository.apprunner-repository.repository_url}:latest"
       image_repository_type = "ECR"
       image_configuration {
-        port = 80
-        runtime_environment_secrets = var.env_secrets
+        port                          = 80
+        runtime_environment_secrets   = var.env_secrets
         runtime_environment_variables = var.env_vars
       }
     }

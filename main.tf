@@ -20,7 +20,7 @@ resource "aws_route53_record" "personal-mail" {
 }
 
 module "smartguitarchords" {
-  source                        = "./smartguitarchords"
+  source                         = "./smartguitarchords"
   personal_domain_hosted_zone_id = module.personal-domain.hosted_zone_id
   personal_domain_name           = local.personal_domain_name
 }

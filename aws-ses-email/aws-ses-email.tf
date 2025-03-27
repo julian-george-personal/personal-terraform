@@ -12,7 +12,8 @@ resource "aws_route53_record" "ses_verification" {
 }
 
 resource "aws_ses_domain_dkim" "ses-dkim" {
-  domain = var.domain_name
+  depends_on = [aws_ses_domain_identity.ses-identity]
+  domain     = var.domain_name
 }
 
 resource "aws_route53_record" "dkim_records" {
@@ -28,7 +29,8 @@ resource "aws_route53_record" "dkim_records" {
 }
 
 resource "aws_ses_domain_identity_verification" "ses-email" {
-  domain = var.domain_name
+  depends_on = [aws_ses_domain_identity.ses-identity]
+  domain     = var.domain_name
 }
 
 data "aws_iam_policy_document" "ses-policy" {
@@ -52,10 +54,11 @@ resource "aws_iam_role_policy" "ses-policy" {
 }
 
 resource "aws_route53_record" "ses_spf" {
-  zone_id = var.hosted_zone_id
-  name    = var.domain_name
-  type    = "TXT"
-  ttl     = 1800
+  depends_on = [aws_ses_domain_identity.ses-identity]
+  zone_id    = var.hosted_zone_id
+  name       = var.domain_name
+  type       = "TXT"
+  ttl        = 1800
   records = [
     "v=spf1 include:amazonses.com ~all"
   ]

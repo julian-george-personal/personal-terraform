@@ -9,11 +9,12 @@ module "domain" {
 }
 
 resource "aws_secretsmanager_secret" "jwt_secret" {
-  name        = "${local.app_name}-jwt-secret"
+  name = "${local.app_name}-jwt-secret"
 }
 
 data "aws_secretsmanager_secret_version" "jwt_secret" {
-  secret_id = aws_secretsmanager_secret.jwt_secret.id
+  depends_on = [aws_secretsmanager_secret.jwt_secret]
+  secret_id  = aws_secretsmanager_secret.jwt_secret.id
 }
 
 resource "aws_dynamodb_table" "account_table" {
@@ -43,7 +44,7 @@ module "application" {
   app_name = local.app_name
   env_vars = {
     "DYNAMO_USER_TABLE_NAME" = aws_dynamodb_table.account_table.name
-    "DOMAIN" = local.domain_name
+    "DOMAIN"                 = local.domain_name
   }
   env_secrets = {
     "JWT_SECRET" = data.aws_secretsmanager_secret_version.jwt_secret.secret_string
