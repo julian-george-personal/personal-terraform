@@ -116,3 +116,21 @@ resource "aws_iam_role_policy" "secrets_policy_attachment" {
   role   = module.application.iam_role_name
   policy = data.aws_iam_policy_document.secrets_policy.json
 }
+
+data "aws_iam_policy_document" "ssm_policy" {
+  statement {
+    actions = [
+      "ssm:GetParameters",
+    ]
+    resources = [
+      "*"
+    ]
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_role_policy" "ssm_policy_attachment" {
+  name   = "${local.app_name}-secrets-access"
+  role   = module.application.iam_role_name
+  policy = data.aws_iam_policy_document.ssm_policy.json
+}
