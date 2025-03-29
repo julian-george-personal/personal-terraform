@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "dynamo-policy" {
       "dynamodb:DeleteItem"
     ]
     resources = [
-      aws_dynamodb_table.account_table.arn
+      "${aws_dynamodb_table.account_table.arn}/*"
     ]
     effect = "Allow"
   }
