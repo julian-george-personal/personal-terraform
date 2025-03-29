@@ -88,10 +88,11 @@ resource "aws_iam_role_policy" "dynamo_table_permissions" {
 }
 
 module "email" {
-  source         = "../aws-ses-email"
-  domain_name    = local.domain_name
-  app_name       = local.app_name
-  hosted_zone_id = module.domain.hosted_zone_id
+  source            = "../aws-ses-email"
+  domain_name       = local.domain_name
+  app_name          = local.app_name
+  hosted_zone_id    = module.domain.hosted_zone_id
+  email_sender_role = module.application.iam_role_name
 }
 
 data "aws_iam_policy_document" "secrets_policy" {
