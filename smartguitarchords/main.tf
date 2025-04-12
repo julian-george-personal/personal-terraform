@@ -15,22 +15,11 @@ resource "aws_secretsmanager_secret" "jwt_secret" {
 resource "aws_dynamodb_table" "account_table" {
   name         = "${local.app_name}-accounts"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "username"
+  hash_key     = "PK"
 
   attribute {
-    name = "username"
+    name = "PK"
     type = "S"
-  }
-
-  attribute {
-    name = "email"
-    type = "S"
-  }
-
-  global_secondary_index {
-    name            = "EmailIndex"
-    hash_key        = "email"
-    projection_type = "ALL"
   }
 }
 
