@@ -12,6 +12,14 @@ resource "aws_secretsmanager_secret" "jwt_secret" {
   name = "${local.app_name}-jwt-secret"
 }
 
+resource "aws_secretsmanager_secret" "sendgrid-api-key" {
+  name = "${local.app_name}-sendgrid-api-key"
+}
+
+resource "aws_secretsmanager_secret" "recover-password-template-id" {
+  name = "${local.app_name}-recover-password-template-id"
+}
+
 resource "aws_dynamodb_table" "account_table" {
   name         = "${local.app_name}-accounts"
   billing_mode = "PAY_PER_REQUEST"
@@ -33,6 +41,11 @@ module "email-app" {
   source      = "../sendgrid-email-app"
   domain_name = local.domain_name
   app_name    = local.app_name
+}
+
+resource "aws_secretsmanager_secret_version" "sendgrid-api-key" {
+  secret_id     = aws_secretsmanager_secret.sendgrid-api-key.id
+  secret_string = module.email-app.api_key_value
 }
 
 resource "aws_route53_record" "sendgrid_cname" {
@@ -62,6 +75,11 @@ module "password-recovery-email-template" {
   email_body    = file("./smartguitarchords/password-recovery-template.html")
 }
 
+resource "aws_secretsmanager_secret_version" "recover-password-template-id" {
+  secret_id     = aws_secretsmanager_secret.recover-password-template-id.id
+  secret_string = module.password-recovery-email-template.template_id
+}
+
 module "application" {
   source   = "../aws-apprunner-application"
   app_name = local.app_name
@@ -71,8 +89,8 @@ module "application" {
   }
   env_secrets = {
     "JWT_SECRET"                   = aws_secretsmanager_secret.jwt_secret.arn
-    "SENDGRID_API_KEY"             = module.email-app.api_key_value
-    "RECOVER_PASSWORD_TEMPLATE_ID" = module.password-recovery-email-template.template_id
+    "SENDGRID_API_KEY"             = aws_secretsmanager_secret.sendgrid-api-key.arn
+    "RECOVER_PASSWORD_TEMPLATE_ID" = aws_secretsmanager_secret_version.recover-password-template-id.arn
   }
 }
 
