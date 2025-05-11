@@ -37,7 +37,7 @@ module "email-app" {
 
 resource "aws_route53_record" "sendgrid_domain_authentication" {
   for_each = {
-    for idx in range(4) : idx => tolist(module.email-app.dns_records)[idx]
+    for idx in range(3) : idx => tolist(module.email-app.dns_records)[idx]
   }
   
   zone_id = module.domain.hosted_zone_id
