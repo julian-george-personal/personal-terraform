@@ -35,16 +35,24 @@ module "email-app" {
   app_name    = local.app_name
 }
 
-resource "aws_route53_record" "sendgrid_domain_authentication" {
+resource "aws_route53_record" "sendgrid_cname" {
   for_each = {
     for idx in range(3) : idx => tolist(module.email-app.dns_records)[idx]
   }
-  
+
   zone_id = module.domain.hosted_zone_id
   name    = each.value.host
-  type    = each.value.type
+  type    = "CNAME"
   ttl     = "3600"
   records = [each.value.data]
+}
+
+resource "aws_route53_record" "sendgrid_dmarc" {
+  zone_id = module.domain.hosted_zone_id
+  name    = "_dmarc.${local.domain_name}"
+  type    = "TXT"
+  ttl     = "3600"
+  records = ["v=DMARC1; p=none;"]
 }
 
 module "password-recovery-email-template" {
@@ -62,8 +70,8 @@ module "application" {
     "DOMAIN"                 = local.domain_name
   }
   env_secrets = {
-    "JWT_SECRET" = aws_secretsmanager_secret.jwt_secret.arn
-    "SENDGRID_API_KEY" = module.email-app.api_key_value
+    "JWT_SECRET"                   = aws_secretsmanager_secret.jwt_secret.arn
+    "SENDGRID_API_KEY"             = module.email-app.api_key_value
     "RECOVER_PASSWORD_TEMPLATE_ID" = module.password-recovery-email-template.template_id
   }
 }

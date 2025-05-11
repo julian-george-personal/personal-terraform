@@ -3,5 +3,5 @@ output "api_key_value" {
 }
 
 output "dns_records" {
-  value       = sendgrid_domain_authentication.default.dns
+  value = sendgrid_domain_authentication.default.dns
 }
