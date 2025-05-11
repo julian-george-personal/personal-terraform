@@ -1,3 +1,14 @@
+terraform {
+  required_providers {
+    sendgrid = {
+      source = "indentinc/sendgrid"
+    }
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
+}
+
 locals {
   personal_domain_name = "juliangeorge.net"
 }
@@ -5,6 +16,8 @@ locals {
 provider "aws" {
   region = "us-east-1"
 }
+
+provider "sendgrid" {}
 
 module "personal-domain" {
   source      = "./aws-route53-domain"

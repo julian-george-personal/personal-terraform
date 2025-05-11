@@ -83,12 +83,17 @@ resource "aws_iam_role_policy" "dynamo_table_permissions" {
   policy = data.aws_iam_policy_document.dynamo-policy.json
 }
 
-module "email" {
-  source            = "../aws-ses-email"
-  domain_name       = local.domain_name
-  app_name          = local.app_name
-  hosted_zone_id    = module.domain.hosted_zone_id
-  email_sender_role = module.application.iam_role_name
+module "email-app" {
+  source      = "../sendgrid-email-app"
+  domain_name = local.domain_name
+  app_name    = local.app_name
+}
+
+module "password-recovery-email-template" {
+  source        = "../sendgrid-email-template"
+  template_name = "smartguitarchords-passwordrecovery"
+  email_subject = "Reset your password"
+  email_body    = file("./smartguitarchords/password-recovery-template.html")
 }
 
 data "aws_iam_policy_document" "secrets_policy" {
