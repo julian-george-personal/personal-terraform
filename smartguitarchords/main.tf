@@ -29,6 +29,31 @@ resource "aws_dynamodb_table" "account_table" {
   }
 }
 
+module "email-app" {
+  source      = "../sendgrid-email-app"
+  domain_name = local.domain_name
+  app_name    = local.app_name
+}
+
+resource "aws_route53_record" "sendgrid_domain_authentication" {
+  for_each = {
+    for idx in range(4) : idx => tolist(module.email-app.dns_records)[idx]
+  }
+  
+  zone_id = module.domain.hosted_zone_id
+  name    = each.value.host
+  type    = each.value.type
+  ttl     = "3600"
+  records = [each.value.data]
+}
+
+module "password-recovery-email-template" {
+  source        = "../sendgrid-email-template"
+  template_name = "smartguitarchords-passwordrecovery"
+  email_subject = "Reset your password"
+  email_body    = file("./smartguitarchords/password-recovery-template.html")
+}
+
 module "application" {
   source   = "../aws-apprunner-application"
   app_name = local.app_name
@@ -38,6 +63,8 @@ module "application" {
   }
   env_secrets = {
     "JWT_SECRET" = aws_secretsmanager_secret.jwt_secret.arn
+    "SENDGRID_API_KEY" = module.email-app.api_key_value
+    "RECOVER_PASSWORD_TEMPLATE_ID" = module.password-recovery-email-template.template_id
   }
 }
 
@@ -56,7 +83,6 @@ module "dns-personal" {
   domain_name    = "${local.app_name}.${var.personal_domain_name}"
   apprunner_arn  = module.application.arn
 }
-
 
 data "aws_iam_policy_document" "dynamo-policy" {
   statement {
@@ -81,19 +107,6 @@ resource "aws_iam_role_policy" "dynamo_table_permissions" {
   name   = "${local.app_name}-dynamo-readwrite"
   role   = module.application.iam_role_name
   policy = data.aws_iam_policy_document.dynamo-policy.json
-}
-
-module "email-app" {
-  source      = "../sendgrid-email-app"
-  domain_name = local.domain_name
-  app_name    = local.app_name
-}
-
-module "password-recovery-email-template" {
-  source        = "../sendgrid-email-template"
-  template_name = "smartguitarchords-passwordrecovery"
-  email_subject = "Reset your password"
-  email_body    = file("./smartguitarchords/password-recovery-template.html")
 }
 
 data "aws_iam_policy_document" "secrets_policy" {
