@@ -80,25 +80,6 @@ resource "aws_secretsmanager_secret_version" "recover-password-template-id" {
   secret_string = module.password-recovery-email-template.template_id
 }
 
-resource "aws_route53_record" "improvmx_mx" {
-  zone_id = module.domain.hosted_zone_id
-  name    = local.domain_name
-  type    = "MX"
-  ttl     = "3600"
-  records = [
-    "10 mx1.improvmx.com",
-    "20 mx2.improvmx.com"
-  ]
-}
-
-resource "aws_route53_record" "improvmx_spf" {
-  zone_id = module.domain.hosted_zone_id
-  name    = local.domain_name
-  type    = "TXT"
-  ttl     = "3600"
-  records = ["v=spf1 include:spf.improvmx.com ~all"]
-}
-
 module "application" {
   source   = "../aws-apprunner-application"
   app_name = local.app_name
