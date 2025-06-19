@@ -35,3 +35,7 @@ module "smartguitarchords" {
   personal_domain_hosted_zone_id = module.personal-domain.hosted_zone_id
   personal_domain_name           = local.personal_domain_name
 }
+
+resource "aws_s3_bucket" "static-sites" {
+  bucket = "static-sites"
+}
