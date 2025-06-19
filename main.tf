@@ -10,7 +10,7 @@ terraform {
 }
 
 locals {
-  personal_domain_name = "juliangeorge.net"
+  personal_domain_name     = "juliangeorge.net"
   static_sites_bucket_name = "static-sites-juliangeorge"
 }
 
@@ -41,32 +41,31 @@ resource "aws_s3_bucket" "static-sites" {
   bucket = local.static_sites_bucket_name
 }
 
-module "portfolio"  {
-  source = "./aws-s3-application"
-  application_name = "portfolio"
+module "portfolio" {
+  source             = "./aws-s3-application"
+  application_name   = "portfolio"
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
-  hosted_zone_id = module.personal-domain.hosted_zone_id
-  app_domain_name = local.personal_domain_name
-  bucket_name = local.static_sites_bucket_name
+  hosted_zone_id     = module.personal-domain.hosted_zone_id
+  app_domain_name    = local.personal_domain_name
+  bucket_name        = local.static_sites_bucket_name
 }
 
 module "viberance" {
-  source = "./aws-s3-application"
-  application_name = "viberance"
+  source             = "./aws-s3-application"
+  application_name   = "viberance"
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
-  hosted_zone_id = module.personal-domain.hosted_zone_id
-  app_domain_name = "viberance.${local.personal_domain_name}"
-  bucket_name = local.static_sites_bucket_name
+  hosted_zone_id     = module.personal-domain.hosted_zone_id
+  app_domain_name    = "viberance.${local.personal_domain_name}"
+  bucket_name        = local.static_sites_bucket_name
 }
 
 data "aws_iam_policy_document" "combined_policy" {
   source_policy_documents = [
-    moduke.portfolio.s3_policy_json,
+    module.portfolio.s3_policy_json,
     module.viberance.s3_policy_json,
   ]
 }
 
-# Apply the combined policy to the bucket
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.static-sites.bucket
   policy = data.aws_iam_policy_document.combined_policy.json
