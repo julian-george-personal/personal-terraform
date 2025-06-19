@@ -101,3 +101,26 @@ resource "aws_route53_record" "this" {
     evaluate_target_health = false
   }
 }
+
+data "aws_iam_policy_document" "s3_policy" {
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${var.bucket_name}/${var.application_name}/*"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.s3_distribution.arn]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = var.bucket_name
+  policy = data.aws_iam_policy_document.s3_policy.json
+}

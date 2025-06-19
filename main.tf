@@ -11,6 +11,7 @@ terraform {
 
 locals {
   personal_domain_name = "juliangeorge.net"
+  static_sites_bucket_name = "static-sites-juliangeorge"
 }
 
 provider "aws" {
@@ -37,7 +38,7 @@ module "smartguitarchords" {
 }
 
 resource "aws_s3_bucket" "static-sites" {
-  bucket = "static-sites-juliangeorge"
+  bucket = local.static_sites_bucket_name
 }
 
 module "aws-s3-application" {
@@ -46,4 +47,5 @@ module "aws-s3-application" {
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
   hosted_zone_id = module.personal-domain.hosted_zone_id
   app_domain_name = local.personal_domain_name
+  bucket_name = local.static_sites_bucket_name
 }
