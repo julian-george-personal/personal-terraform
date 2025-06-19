@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "static-sites" {
   bucket = local.static_sites_bucket_name
 }
 
-module "aws-s3-application" {
+module "portfolio"  {
   source = "./aws-s3-application"
   application_name = "portfolio"
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
@@ -50,7 +50,7 @@ module "aws-s3-application" {
   bucket_name = local.static_sites_bucket_name
 }
 
-module "aws-s3-application" {
+module "viberance" {
   source = "./aws-s3-application"
   application_name = "viberance"
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
