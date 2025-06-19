@@ -25,8 +25,8 @@ module "personal-domain" {
 }
 
 module "personal-email" {
-  source = "./personal-email"
-  domain_name = local.personal_domain_name
+  source         = "./personal-email"
+  domain_name    = local.personal_domain_name
   hosted_zone_id = module.personal-domain.hosted_zone_id
 }
 
