@@ -39,3 +39,11 @@ module "smartguitarchords" {
 resource "aws_s3_bucket" "static-sites" {
   bucket = "static-sites-juliangeorge"
 }
+
+module "aws-s3-application" {
+  source = "./aws-s3-application"
+  application_name = "portfolio"
+  bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
+  hosted_zone_id = module.personal-domain.hosted_zone_id
+  app_domain_name = local.personal_domain_name
+}
