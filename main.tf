@@ -37,5 +37,5 @@ module "smartguitarchords" {
 }
 
 resource "aws_s3_bucket" "static-sites" {
-  bucket = "static-sites"
+  bucket = "static-sites-juliangeorge"
 }
