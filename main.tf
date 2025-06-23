@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "combined_policy" {
     module.portfolio.s3_policy_json,
     module.viberance.s3_policy_json,
     module.comet-tour.s3_policy_json,
-    module.dartmouth-id-creator.policy_json
+    module.dartmouth-id-creator.s3_policy_json
   ]
 }
 
