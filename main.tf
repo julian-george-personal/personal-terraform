@@ -59,10 +59,20 @@ module "viberance" {
   bucket_name        = local.static_sites_bucket_name
 }
 
+module "comet-tour" {
+  source             = "./aws-s3-application"
+  application_name   = "comet-tour"
+  bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
+  hosted_zone_id     = module.personal-domain.hosted_zone_id
+  app_domain_name    = "comet-tour.${local.personal_domain_name}"
+  bucket_name        = local.static_sites_bucket_name
+}
+
 data "aws_iam_policy_document" "combined_policy" {
   source_policy_documents = [
     module.portfolio.s3_policy_json,
     module.viberance.s3_policy_json,
+    module.comet-tour.s3_policy_json
   ]
 }
 
