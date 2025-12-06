@@ -20,6 +20,10 @@ resource "aws_secretsmanager_secret" "recover-password-template-id" {
   name = "${local.app_name}-recover-password-template-id"
 }
 
+resource "aws_secretsmanager_secret" "sentry-dsn" {
+  name = "${local.app_name}-sentry-dsn"
+}
+
 resource "aws_dynamodb_table" "account_table" {
   name         = "${local.app_name}-accounts"
   billing_mode = "PAY_PER_REQUEST"
@@ -109,7 +113,8 @@ module "application" {
   env_secrets = {
     "JWT_SECRET"                   = aws_secretsmanager_secret.jwt_secret.arn
     "SENDGRID_API_KEY"             = aws_secretsmanager_secret.sendgrid-api-key.arn
-    "RECOVER_PASSWORD_TEMPLATE_ID" = aws_secretsmanager_secret_version.recover-password-template-id.arn
+    "RECOVER_PASSWORD_TEMPLATE_ID" = aws_secretsmanager_secret_version.recover-password-template-id.arn,
+    "SENTRY_DSN"                   = aws_secretsmanager_secret.sentry-dsn.arn
   }
 }
 
