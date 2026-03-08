@@ -20,6 +20,43 @@ resource "aws_secretsmanager_secret" "sentry-dsn" {
   name = "${local.app_name}-sentry-dsn"
 }
 
+module "email-app" {
+  source      = "../resend-email-app"
+  domain_name = local.domain_name
+  app_name    = local.app_name
+}
+
+resource "aws_secretsmanager_secret_version" "resend-api-key" {
+  secret_id     = aws_secretsmanager_secret.resend-api-key.id
+  secret_string = module.email-app.api_key_token
+}
+
+resource "aws_route53_record" "resend_dkim" {
+  count = 3
+
+  zone_id = module.domain.hosted_zone_id
+  name    = module.email-app.dkim_records[count.index].name
+  type    = module.email-app.dkim_records[count.index].type
+  ttl     = module.email-app.dkim_records[count.index].ttl
+  records = [module.email-app.dkim_records[count.index].value]
+}
+
+resource "aws_route53_record" "resend_spf_txt" {
+  zone_id = module.domain.hosted_zone_id
+  name    = module.email-app.spf_txt_record.name
+  type    = module.email-app.spf_txt_record.type
+  ttl     = module.email-app.spf_txt_record.ttl
+  records = [module.email-app.spf_txt_record.value]
+}
+
+resource "aws_route53_record" "resend_spf_mx" {
+  zone_id = module.domain.hosted_zone_id
+  name    = module.email-app.spf_mx_record.name
+  type    = module.email-app.spf_mx_record.type
+  ttl     = module.email-app.spf_mx_record.ttl
+  records = ["${module.email-app.spf_mx_record.priority} ${module.email-app.spf_mx_record.value}"]
+}
+
 resource "aws_dynamodb_table" "account_table" {
   name         = "${local.app_name}-accounts"
   billing_mode = "PAY_PER_REQUEST"

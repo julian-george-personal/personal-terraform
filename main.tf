@@ -1,10 +1,10 @@
 terraform {
   required_providers {
-    sendgrid = {
-      source = "indentinc/sendgrid"
-    }
     aws = {
       source = "hashicorp/aws"
+    }
+    resend = {
+      source = "jhoward321/resend"
     }
   }
 }
@@ -18,7 +18,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-provider "sendgrid" {}
+provider "resend" {}
 
 module "personal-domain" {
   source      = "./aws-route53-domain"
