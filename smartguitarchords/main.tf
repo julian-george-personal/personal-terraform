@@ -35,7 +35,7 @@ resource "aws_route53_record" "resend_dkim" {
   zone_id = module.domain.hosted_zone_id
   name    = module.email-app.dkim_records[0].name
   type    = module.email-app.dkim_records[0].type
-  ttl     = module.email-app.dkim_records[0].ttl
+  ttl     = 3600
   records = [module.email-app.dkim_records[0].value]
 }
 
@@ -43,7 +43,7 @@ resource "aws_route53_record" "resend_spf_txt" {
   zone_id = module.domain.hosted_zone_id
   name    = module.email-app.spf_txt_record.name
   type    = module.email-app.spf_txt_record.type
-  ttl     = module.email-app.spf_txt_record.ttl
+  ttl     = 3600
   records = [module.email-app.spf_txt_record.value]
 }
 
@@ -51,7 +51,7 @@ resource "aws_route53_record" "resend_spf_mx" {
   zone_id = module.domain.hosted_zone_id
   name    = module.email-app.spf_mx_record.name
   type    = module.email-app.spf_mx_record.type
-  ttl     = module.email-app.spf_mx_record.ttl
+  ttl     = 3600
   records = ["${module.email-app.spf_mx_record.priority} ${module.email-app.spf_mx_record.value}"]
 }
 
