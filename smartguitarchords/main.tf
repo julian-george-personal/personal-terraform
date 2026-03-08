@@ -12,12 +12,8 @@ resource "aws_secretsmanager_secret" "jwt_secret" {
   name = "${local.app_name}-jwt-secret"
 }
 
-resource "aws_secretsmanager_secret" "sendgrid-api-key" {
-  name = "${local.app_name}-sendgrid-api-key"
-}
-
-resource "aws_secretsmanager_secret" "recover-password-template-id" {
-  name = "${local.app_name}-recover-password-template-id"
+resource "aws_secretsmanager_secret" "resend-api-key" {
+  name = "${local.app_name}-resend-api-key"
 }
 
 resource "aws_secretsmanager_secret" "sentry-dsn" {
@@ -41,48 +37,6 @@ resource "aws_dynamodb_table" "account_table" {
   }
 }
 
-module "email-app" {
-  source      = "../sendgrid-email-app"
-  domain_name = local.domain_name
-  app_name    = local.app_name
-}
-
-resource "aws_secretsmanager_secret_version" "sendgrid-api-key" {
-  secret_id     = aws_secretsmanager_secret.sendgrid-api-key.id
-  secret_string = module.email-app.api_key_value
-}
-
-resource "aws_route53_record" "sendgrid_cname" {
-  for_each = {
-    for idx in range(3) : idx => tolist(module.email-app.dns_records)[idx]
-  }
-
-  zone_id = module.domain.hosted_zone_id
-  name    = each.value.host
-  type    = "CNAME"
-  ttl     = "3600"
-  records = [each.value.data]
-}
-
-resource "aws_route53_record" "sendgrid_dmarc" {
-  zone_id = module.domain.hosted_zone_id
-  name    = "_dmarc.${local.domain_name}"
-  type    = "TXT"
-  ttl     = "3600"
-  records = ["v=DMARC1; p=none;"]
-}
-
-module "password-recovery-email-template" {
-  source        = "../sendgrid-email-template"
-  template_name = "smartguitarchords-passwordrecovery"
-  email_subject = "Reset your password"
-  email_body    = file("./smartguitarchords/password-recovery-template.html")
-}
-
-resource "aws_secretsmanager_secret_version" "recover-password-template-id" {
-  secret_id     = aws_secretsmanager_secret.recover-password-template-id.id
-  secret_string = module.password-recovery-email-template.template_id
-}
 
 resource "aws_route53_record" "improvmx_mx" {
   zone_id = module.domain.hosted_zone_id
@@ -111,10 +65,9 @@ module "application" {
     "DOMAIN"                 = local.domain_name
   }
   env_secrets = {
-    "JWT_SECRET"                   = aws_secretsmanager_secret.jwt_secret.arn
-    "SENDGRID_API_KEY"             = aws_secretsmanager_secret.sendgrid-api-key.arn
-    "RECOVER_PASSWORD_TEMPLATE_ID" = aws_secretsmanager_secret_version.recover-password-template-id.arn,
-    "SENTRY_DSN"                   = aws_secretsmanager_secret.sentry-dsn.arn
+    "JWT_SECRET"     = aws_secretsmanager_secret.jwt_secret.arn
+    "RESEND_API_KEY" = aws_secretsmanager_secret.resend-api-key.arn
+    "SENTRY_DSN"     = aws_secretsmanager_secret.sentry-dsn.arn
   }
 }
 
@@ -167,8 +120,7 @@ data "aws_iam_policy_document" "secrets_policy" {
     resources = [
     # when you make a new secret you need to add it here
       aws_secretsmanager_secret.jwt_secret.arn,
-      aws_secretsmanager_secret.sendgrid-api-key.arn,
-      aws_secretsmanager_secret.recover-password-template-id.arn,
+      aws_secretsmanager_secret.resend-api-key.arn,
       aws_secretsmanager_secret.sentry-dsn.arn
     ]
     effect = "Allow"
