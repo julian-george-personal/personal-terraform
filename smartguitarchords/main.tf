@@ -32,13 +32,11 @@ resource "aws_secretsmanager_secret_version" "resend-api-key" {
 }
 
 resource "aws_route53_record" "resend_dkim" {
-  count = 3
-
   zone_id = module.domain.hosted_zone_id
-  name    = module.email-app.dkim_records[count.index].name
-  type    = module.email-app.dkim_records[count.index].type
-  ttl     = module.email-app.dkim_records[count.index].ttl
-  records = [module.email-app.dkim_records[count.index].value]
+  name    = module.email-app.dkim_records[0].name
+  type    = module.email-app.dkim_records[0].type
+  ttl     = module.email-app.dkim_records[0].ttl
+  records = [module.email-app.dkim_records[0].value]
 }
 
 resource "aws_route53_record" "resend_spf_txt" {
