@@ -20,6 +20,10 @@ resource "aws_secretsmanager_secret" "sentry-dsn" {
   name = "${local.app_name}-sentry-dsn"
 }
 
+resource "aws_secretsmanager_secret" "recover-password-template-id" {
+  name = "${local.app_name}-recover-password-template-id"
+}
+
 module "email-app" {
   source      = "../resend-email-app"
   domain_name = local.domain_name
@@ -100,9 +104,10 @@ module "application" {
     "DOMAIN"                 = local.domain_name
   }
   env_secrets = {
-    "JWT_SECRET"     = aws_secretsmanager_secret.jwt_secret.arn
-    "RESEND_API_KEY" = aws_secretsmanager_secret.resend-api-key.arn
-    "SENTRY_DSN"     = aws_secretsmanager_secret.sentry-dsn.arn
+    "JWT_SECRET"                  = aws_secretsmanager_secret.jwt_secret.arn
+    "RESEND_API_KEY"              = aws_secretsmanager_secret.resend-api-key.arn
+    "SENTRY_DSN"                  = aws_secretsmanager_secret.sentry-dsn.arn
+    "RECOVER_PASSWORD_TEMPLATE_ID" = aws_secretsmanager_secret.recover-password-template-id.arn
   }
 }
 
@@ -156,7 +161,8 @@ data "aws_iam_policy_document" "secrets_policy" {
     # when you make a new secret you need to add it here
       aws_secretsmanager_secret.jwt_secret.arn,
       aws_secretsmanager_secret.resend-api-key.arn,
-      aws_secretsmanager_secret.sentry-dsn.arn
+      aws_secretsmanager_secret.sentry-dsn.arn,
+      aws_secretsmanager_secret.recover-password-template-id.arn
     ]
     effect = "Allow"
   }
