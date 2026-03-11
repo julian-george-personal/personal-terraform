@@ -156,8 +156,7 @@ data "aws_iam_policy_document" "secrets_policy" {
     # when you make a new secret you need to add it here
       aws_secretsmanager_secret.jwt_secret.arn,
       aws_secretsmanager_secret.resend-api-key.arn,
-      aws_secretsmanager_secret.sentry-dsn.arn,
-      "arn:aws:secretsmanager:us-east-1:729175613140:secret:smartguitarchords-recover-password-template-id-eN72tp"
+      aws_secretsmanager_secret.sentry-dsn.arn
     ]
     effect = "Allow"
   }
