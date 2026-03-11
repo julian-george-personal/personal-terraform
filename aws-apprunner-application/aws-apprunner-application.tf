@@ -60,7 +60,7 @@ resource "aws_iam_role" "apprunner-instance-role" {
 }
 
 resource "aws_apprunner_service" "apprunner" {
-  depends_on   = [aws_iam_role.apprunner-builder-role, aws_iam_role.apprunner-instance-role, aws_ecr_repository.apprunner-repository]
+  depends_on   = [aws_iam_role.apprunner-builder-role, aws_iam_role.apprunner-instance-role, aws_ecr_repository.apprunner-repository, aws_iam_role_policy.apprunner-ecr-policy]
   service_name = var.app_name
 
   source_configuration {
