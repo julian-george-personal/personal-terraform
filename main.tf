@@ -77,12 +77,17 @@ module "dartmouth-id-creator" {
   bucket_name        = local.static_sites_bucket_name
 }
 
-module "guitar-note-practice" {
+module "fretboarder-domain" {
+  source      = "./aws-route53-domain"
+  domain_name = "fretboarder.live"
+}
+
+module "fretboarder" {
   source             = "./aws-s3-application"
   application_name   = "guitar-note-practice"
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
-  hosted_zone_id     = module.personal-domain.hosted_zone_id
-  app_domain_name    = "guitar-note-practice.${local.personal_domain_name}"
+  hosted_zone_id     = module.fretboarder-domain.hosted_zone_id
+  app_domain_name    = module.fretboarder-domain.domain_name
   bucket_name        = local.static_sites_bucket_name
 }
 
@@ -92,7 +97,7 @@ data "aws_iam_policy_document" "combined_policy" {
     module.viberance.s3_policy_json,
     module.comet-tour.s3_policy_json,
     module.dartmouth-id-creator.s3_policy_json,
-    module.guitar-note-practice.s3_policy_json
+    module.fretboarder.s3_policy_json
   ]
 }
 

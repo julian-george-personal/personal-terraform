@@ -153,7 +153,7 @@ data "aws_iam_policy_document" "secrets_policy" {
       "secretsmanager:GetSecretValue",
     ]
     resources = [
-    # when you make a new secret you need to add it here
+      # when you make a new secret you need to add it here
       aws_secretsmanager_secret.jwt_secret.arn,
       aws_secretsmanager_secret.resend-api-key.arn,
       aws_secretsmanager_secret.sentry-dsn.arn
