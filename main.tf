@@ -77,12 +77,12 @@ module "dartmouth-id-creator" {
   bucket_name        = local.static_sites_bucket_name
 }
 
-module "guitar-practice" {
+module "guitar-note-practice" {
   source             = "./aws-s3-application"
-  application_name   = "guitar-practice"
+  application_name   = "guitar-note-practice"
   bucket_domain_name = aws_s3_bucket.static-sites.bucket_domain_name
   hosted_zone_id     = module.personal-domain.hosted_zone_id
-  app_domain_name    = "guitar-practice.${local.personal_domain_name}"
+  app_domain_name    = "guitar-note-practice.${local.personal_domain_name}"
   bucket_name        = local.static_sites_bucket_name
 }
 
@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "combined_policy" {
     module.viberance.s3_policy_json,
     module.comet-tour.s3_policy_json,
     module.dartmouth-id-creator.s3_policy_json,
-    module.guitar-practice.s3_policy_json
+    module.guitar-note-practice.s3_policy_json
   ]
 }
 
