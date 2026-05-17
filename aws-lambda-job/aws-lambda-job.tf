@@ -52,3 +52,8 @@ resource "aws_lambda_function" "lambda" {
     variables = merge(var.env_vars, var.env_secrets)
   }
 }
+
+resource "aws_lambda_function_url" "lambda" {
+  function_name      = aws_lambda_function.lambda.function_name
+  authorization_type = "NONE"
+}
