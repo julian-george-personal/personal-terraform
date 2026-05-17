@@ -10,8 +10,9 @@ terraform {
 }
 
 locals {
-  personal_domain_name     = "juliangeorge.net"
-  static_sites_bucket_name = "static-sites-juliangeorge"
+  personal_domain_name         = "juliangeorge.net"
+  static_sites_bucket_name     = "static-sites-juliangeorge"
+  lambda_functions_bucket_name = "lambda-functions-juliangeorge"
 }
 
 provider "aws" {
@@ -39,6 +40,19 @@ module "smartguitarchords" {
 
 resource "aws_s3_bucket" "static-sites" {
   bucket = local.static_sites_bucket_name
+}
+
+module "lambda-functions-bucket" {
+  source             = "./aws-s3-bucket"
+  bucket_name        = local.lambda_functions_bucket_name
+  versioning_enabled = true
+}
+
+module "fretboarder-lambda" {
+  source                    = "./aws-lambda-job"
+  function_name             = "fretboarder"
+  bucket_name               = module.lambda-functions-bucket.bucket_name
+  max_concurrent_executions = 25
 }
 
 module "portfolio" {
