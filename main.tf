@@ -53,6 +53,9 @@ module "fretboarder-lambda" {
   function_name             = "fretboarder"
   bucket_name               = module.lambda-functions-bucket.bucket_name
   max_concurrent_executions = 25
+  env_secrets = {
+    ANTHROPIC_API_KEY = var.anthropic_api_key
+  }
 }
 
 module "portfolio" {
