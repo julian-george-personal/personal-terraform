@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "fretboarder-bedrock-policy" {
 
 resource "aws_iam_role_policy" "fretboarder-bedrock-policy" {
   name   = "fretboarder-bedrock-access"
-  role   = module.fretboarder-lambda.role_arn
+  role   = module.fretboarder-lambda.role_name
   policy = data.aws_iam_policy_document.fretboarder-bedrock-policy.json
 }
 

@@ -10,6 +10,10 @@ output "role_arn" {
   value = aws_iam_role.lambda-role.arn
 }
 
+output "role_name" {
+  value = aws_iam_role.lambda-role.name
+}
+
 output "function_url" {
   value = aws_lambda_function_url.lambda.function_url
 }
