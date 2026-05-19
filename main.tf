@@ -53,9 +53,23 @@ module "fretboarder-lambda" {
   function_name             = "fretboarder"
   bucket_name               = module.lambda-functions-bucket.bucket_name
   max_concurrent_executions = 25
-  env_secrets = {
-    ANTHROPIC_API_KEY = var.anthropic_api_key
+  env_vars = {
+    MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
   }
+}
+
+data "aws_iam_policy_document" "fretboarder-bedrock-policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["bedrock:InvokeModel"]
+    resources = ["arn:aws:bedrock:*::foundation-model/*"]
+  }
+}
+
+resource "aws_iam_role_policy" "fretboarder-bedrock-policy" {
+  name   = "fretboarder-bedrock-access"
+  role   = module.fretboarder-lambda.role_arn
+  policy = data.aws_iam_policy_document.fretboarder-bedrock-policy.json
 }
 
 module "portfolio" {
