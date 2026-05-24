@@ -60,9 +60,12 @@ module "fretboarder-lambda" {
 
 data "aws_iam_policy_document" "fretboarder-bedrock-policy" {
   statement {
-    effect    = "Allow"
-    actions   = ["bedrock:InvokeModel"]
-    resources = ["arn:aws:bedrock:*::foundation-model/*"]
+    effect  = "Allow"
+    actions = ["bedrock:InvokeModel"]
+    resources = [
+      "arn:aws:bedrock:*::foundation-model/*",
+      "arn:aws:bedrock:*:*:inference-profile/*",
+    ]
   }
 }
 
