@@ -10,10 +10,9 @@ terraform {
 }
 
 locals {
-  personal_domain_name           = "juliangeorge.net"
-  static_sites_bucket_name       = "static-sites-juliangeorge"
-  lambda_functions_bucket_name   = "lambda-functions-juliangeorge"
-  hedge_trimmer_data_bucket_name = "hedge-trimmer-juliangeorge"
+  personal_domain_name         = "juliangeorge.net"
+  static_sites_bucket_name     = "static-sites-juliangeorge"
+  lambda_functions_bucket_name = "lambda-functions-juliangeorge"
 }
 
 provider "aws" {
@@ -46,12 +45,6 @@ resource "aws_s3_bucket" "static-sites" {
 module "lambda-functions-bucket" {
   source             = "./aws-s3-bucket"
   bucket_name        = local.lambda_functions_bucket_name
-  versioning_enabled = true
-}
-
-module "hedge-trimmer-data-bucket" {
-  source             = "./aws-s3-bucket"
-  bucket_name        = local.hedge_trimmer_data_bucket_name
   versioning_enabled = true
 }
 
