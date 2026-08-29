@@ -125,6 +125,11 @@ module "fretboarder" {
   bucket_name        = local.static_sites_bucket_name
 }
 
+module "hedge-trimmer-autotrader" {
+  source              = "./hedge-trimmer-autotrader"
+  basic_auth_username = "julian"
+}
+
 data "aws_iam_policy_document" "combined_policy" {
   source_policy_documents = [
     module.portfolio.s3_policy_json,
