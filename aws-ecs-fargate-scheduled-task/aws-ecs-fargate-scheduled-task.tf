@@ -1,16 +1,5 @@
 data "aws_region" "current" {}
 
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-
 resource "aws_ecr_repository" "task" {
   name                 = var.task_name
   image_tag_mutability = "MUTABLE"
@@ -120,14 +109,13 @@ resource "aws_ecs_task_definition" "task" {
   ])
 }
 
-# No NAT gateway: the task runs in a default-VPC public subnet with a
-# public IP and an outbound-only security group, since this is a batch job
-# hitting the internet (external APIs, S3) with nothing that needs to
-# reach it inbound.
+# No NAT gateway: the task runs in a public subnet with a public IP and an
+# outbound-only security group, since this is a batch job hitting the
+# internet (external APIs, S3) with nothing that needs to reach it inbound.
 resource "aws_security_group" "task" {
   name        = "${var.task_name}-task-sg"
   description = "Outbound-only access for the ${var.task_name} scheduled task"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = var.vpc_id
 
   egress {
     from_port   = 0
@@ -190,7 +178,7 @@ resource "aws_scheduler_schedule" "task" {
       launch_type         = "FARGATE"
 
       network_configuration {
-        subnets          = data.aws_subnets.default.ids
+        subnets          = var.subnet_ids
         security_groups  = [aws_security_group.task.id]
         assign_public_ip = true
       }

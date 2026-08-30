@@ -25,6 +25,8 @@ data "aws_s3_bucket" "hedge_trimmer_data" {
 module "task" {
   source              = "../aws-ecs-fargate-scheduled-task"
   task_name           = local.app_name
+  vpc_id              = var.vpc_id
+  subnet_ids          = var.subnet_ids
   cpu                 = 512
   memory              = 2048
   schedule_expression = "rate(12 hours)"

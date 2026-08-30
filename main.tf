@@ -130,8 +130,15 @@ module "hedge-trimmer-autotrader" {
   basic_auth_username = "julian"
 }
 
+module "fargate-public-vpc" {
+  source = "./aws-public-vpc"
+  name   = "fargate-scheduled-tasks"
+}
+
 module "hedge-trimmer-ingestion" {
-  source = "./hedge-trimmer-ingestion"
+  source     = "./hedge-trimmer-ingestion"
+  vpc_id     = module.fargate-public-vpc.vpc_id
+  subnet_ids = module.fargate-public-vpc.subnet_ids
 }
 
 data "aws_iam_policy_document" "combined_policy" {
