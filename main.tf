@@ -130,6 +130,10 @@ module "hedge-trimmer-autotrader" {
   basic_auth_username = "julian"
 }
 
+module "hedge-trimmer-ingestion" {
+  source = "./hedge-trimmer-ingestion"
+}
+
 data "aws_iam_policy_document" "combined_policy" {
   source_policy_documents = [
     module.portfolio.s3_policy_json,
